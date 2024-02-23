@@ -1,5 +1,5 @@
 import { Github, Plus } from "lucide-react";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useCallback, useState } from "react";
 import { api } from "../../services/api";
 
 export function Main() {
@@ -13,17 +13,24 @@ export function Main() {
     setNewRepo(e.target.value);
   }
 
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault();
+  const handleSubmit = useCallback(
+    (e: FormEvent) => {
+      e.preventDefault();
 
-    const response = await api.get(`repos/${newRepo}`);
-    const data: Data = {
-      name: response.data.full_name,
-    };
+      async function submit() {
+        const response = await api.get(`repos/${newRepo}`);
+        const data: Data = {
+          name: response.data.full_name,
+        };
 
-    setRepository([...repository, data]);
-    setNewRepo("");
-  }
+        setRepository([...repository, data]);
+        setNewRepo("");
+      }
+
+      submit();
+    },
+    [newRepo, repository]
+  );
   return (
     <div className="antialiased p-4 mt-12 items-start w-[700px] h-[150px] rounded-md flex flex-col bg-white">
       <div className="p-4 flex gap-2 w-full items-start">
