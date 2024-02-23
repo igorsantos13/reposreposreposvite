@@ -1,14 +1,28 @@
 import { Github, Plus } from "lucide-react";
 import { ChangeEvent, FormEvent, useState } from "react";
+import { api } from "../../services/api";
+
 export function Main() {
+  interface Data {
+    name: string;
+  }
   const [newRepo, setNewRepo] = useState("");
+  const [repository, setRepository] = useState<object[]>([]);
 
   function handleInputValue(e: ChangeEvent<HTMLInputElement>) {
     setNewRepo(e.target.value);
   }
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
+
+    const response = await api.get(`repos/${newRepo}`);
+    const data: Data = {
+      name: response.data.full_name,
+    };
+
+    setRepository([...repository, data]);
+    setNewRepo("");
   }
   return (
     <div className="antialiased p-4 mt-12 items-start w-[700px] h-[150px] rounded-md flex flex-col bg-white">
