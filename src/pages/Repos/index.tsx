@@ -1,3 +1,7 @@
 export function Repos() {
-  return <>repos</>;
+  return (
+    <div>
+      <h1 className="text-white">AAAAAAAAAAAAAAAAAAAAAA</h1>
+    </div>
+  );
 }
