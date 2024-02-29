@@ -130,7 +130,7 @@ export function Main() {
               />
               <li key={repo.name}>{repo.name}</li>
             </div>
-            <Link to={`/repositorio/${encodeURIComponent(repo.name)}`}>
+            <Link to={`/repos/${encodeURIComponent(repo.name)}`}>
               <Menu className="cursor-pointer" />
             </Link>
           </div>
