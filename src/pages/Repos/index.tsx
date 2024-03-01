@@ -7,8 +7,9 @@ export function Repos() {
   const [repository, setRepository] = useState({});
   const [issues, setIssues] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
   const { repo } = useParams();
-  console.log(repo);
+
   useEffect(() => {
     async function load() {
       const [repositoryData, repositoryIssues] = await Promise.all([
@@ -22,12 +23,26 @@ export function Repos() {
       ]);
 
       setRepository(repositoryData.data);
-      setIssues(repositoryIssues.data);
+      // setIssues(repositoryIssues.data);
       setLoading(false);
     }
 
     load();
   }, [repo]);
+
+  useEffect(() => {
+    async function loadPages() {
+      const currentIssue = await api.get(`/repos/${repo}/issues`, {
+        params: {
+          state: "open",
+          page,
+          per_page: 5,
+        },
+      });
+      setIssues(currentIssue.data);
+    }
+    loadPages();
+  }, [page]);
   return (
     <>
       <div className="antialiased p-4 mt-12 w-[750px] min-h-[150px] rounded-md flex flex-col items-center bg-white">
@@ -52,7 +67,7 @@ export function Repos() {
 
         <p>{repository?.description}</p>
 
-        <div className="antialiased p-4 mt-12 w-[750px] min-h-[150px] rounded-md flex flex-col items-center bg-slate-100">
+        <div className="antialiased p-4 mt-12 w-[750px] min-h-[150px] rounded-md flex flex-col items-center">
           <ul className="rounded-md flex flex-col justify-around h-[600px]">
             {issues?.map((issue) => (
               <li
@@ -83,6 +98,23 @@ export function Repos() {
               </li>
             ))}
           </ul>
+        </div>
+
+        <div className="flex flex-row justify-between w-full">
+          <button
+            className="bg-slate-800 text-white px-4 py-1 rounded-md"
+            type="button"
+            onClick={() => setPage(() => page - 1)}
+          >
+            Previous
+          </button>
+          <button
+            className="bg-slate-800 text-white px-6 py-1 rounded-md"
+            type="button"
+            onClick={() => setPage(() => page + 1)}
+          >
+            Next
+          </button>
         </div>
       </div>
     </>
