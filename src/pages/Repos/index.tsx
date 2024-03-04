@@ -8,6 +8,12 @@ export function Repos() {
   const [issues, setIssues] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
+  const [filter, setFilter] = useState([
+    { state: "all", label: "All", active: true },
+    { state: "open", label: "Open", active: false },
+    { state: "closed", label: "Closed", active: false },
+  ]);
+  let [filterIndex, setFilterIndex] = useState(0);
   const { repo } = useParams();
 
   useEffect(() => {
@@ -16,7 +22,7 @@ export function Repos() {
         api.get(`/repos/${repo}`),
         api.get(`/repos/${repo}/issues`, {
           params: {
-            state: "open",
+            state: filter.find((f) => f.active)?.state,
             per_page: 5,
           },
         }),
@@ -34,7 +40,7 @@ export function Repos() {
     async function loadPages() {
       const currentIssue = await api.get(`/repos/${repo}/issues`, {
         params: {
-          state: "open",
+          state: filter[filterIndex].state,
           page,
           per_page: 5,
         },
@@ -42,7 +48,11 @@ export function Repos() {
       setIssues(currentIssue.data);
     }
     loadPages();
-  }, [page]);
+  }, [page, filter, filterIndex, repo]);
+
+  function handleFilter(index) {
+    setFilterIndex(index);
+  }
   return (
     <>
       <div className="antialiased p-4 mt-12 w-[750px] min-h-[150px] rounded-md flex flex-col items-center bg-white">
@@ -68,6 +78,21 @@ export function Repos() {
         <p>{repository?.description}</p>
 
         <div className="antialiased p-4 mt-12 w-[750px] min-h-[150px] rounded-md flex flex-col items-center">
+          <h3>Filter by repository state:</h3>
+          <div className="flex flex-row w-[200px] justify-around">
+            {filter.map((f, index) => (
+              <button
+                onClick={() => handleFilter(index)}
+                key={f.label}
+                className={`${filter.find((f) =>
+                  f.active === true ? "bg-blue-600" : "bg-slate-600"
+                )} text-black py-1 px-2 rounded-md`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+
           <ul className="rounded-md flex flex-col justify-around h-[600px]">
             {issues?.map((issue) => (
               <li
