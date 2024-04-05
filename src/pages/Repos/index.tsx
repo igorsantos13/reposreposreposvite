@@ -13,7 +13,7 @@ export function Repos() {
     { state: "open", label: "Open", active: false },
     { state: "closed", label: "Closed", active: false },
   ]);
-  let [filterIndex, setFilterIndex] = useState(0);
+  const [filterIndex, setFilterIndex] = useState(0);
   const { repo } = useParams();
 
   useEffect(() => {
